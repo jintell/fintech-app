@@ -1,15 +1,22 @@
 package com.jade.fintech.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TransactionServiceTest {
 
+    private TransactionService transactionService;
+
+    @BeforeEach
+    void setUp() {
+        transactionService = new TransactionService();
+    }
+
+
     @Test
     void findAllByAccountNumber() {
-        TransactionService transactionService = new TransactionService();
-        assertEquals(3, transactionService.findAllByAccountNumber().size());
+        assertEquals(3, transactionService.findAllByAccountNumber("123").size());
     }
 }

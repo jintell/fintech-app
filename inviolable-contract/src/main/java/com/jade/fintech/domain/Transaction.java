@@ -1,5 +1,6 @@
 package com.jade.fintech.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
  * @Date: 7/17/22
  */
 @Data
+@AllArgsConstructor
 public class Transaction {
     private String type;
     private LocalDate date;

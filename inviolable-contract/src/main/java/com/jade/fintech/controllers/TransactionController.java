@@ -2,6 +2,7 @@ package com.jade.fintech.controllers;
 
 import com.jade.fintech.domain.Transaction;
 import com.jade.fintech.service.TransactionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,13 @@ import java.util.List;
  * @Date: 7/17/22
  */
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/v1/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
-    TransactionService transactionService = new TransactionService(); // Will change to injected service
+    private final TransactionService transactionService;
 
     @GetMapping("/{accountNumber}")
     public List<Transaction> getTransactions(@PathVariable String accountNumber) {
-        return transactionService.findAllByAccountNumber();
+        return transactionService.findAllByAccountNumber(accountNumber);
     }
 }
