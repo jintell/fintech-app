@@ -1,0 +1,16 @@
+server:
+  port: 9088
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/financial_service
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    show-sql: false
