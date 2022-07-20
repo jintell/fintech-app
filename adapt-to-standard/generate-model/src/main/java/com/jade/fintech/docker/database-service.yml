@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  database-service:
+    image: mysql:8.0.23
+    container_name: database-service
+    ports:
+      - "3306:3306"
+    volumes:
+      - "/app/mysql/data:/var/lib/mysql"
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: financial_service
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+    network_mode: "host"
+
