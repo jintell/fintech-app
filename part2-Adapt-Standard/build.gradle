@@ -12,6 +12,7 @@ sourceCompatibility = '11'
 ext['resilience4jVersion'] = '1.7.1'
 
 configurations {
+    all*.exclude module : 'spring-boot-starter-logging'
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -26,10 +27,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.data:spring-data-commons'
     // Spring Boot Web and Rest dependency
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation ('org.springframework.boot:spring-boot-starter-webflux'){
-        exclude module: "logback-classic"
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation ('org.springframework.boot:spring-boot-starter-webflux')
     // SpringDoc dependencies
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
     // Mysql Database dependency
