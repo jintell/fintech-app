@@ -1,0 +1,76 @@
+server:
+  port: 9088
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/financial_service
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+  sql:
+    init:
+      mode: always
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    show-sql: false
+  profiles:
+    active: dev
+
+#logging:
+#  level:
+#    root: debug
+
+open:
+  banking:
+    baseUrl: https://api.alphabank.com/open-banking/v3.1/aisp
+    transactions:
+      endpoint: ${open.banking.baseUrl}/accounts/{AccountId}/transactions
+
+keycloak:
+  principal-attribute: preferred_username
+  realm: open-banking
+  auth-server-url: http://localhost:9001
+  resource: open-banking
+#  use-resource-role-mappings: true
+  bearer-only: true
+
+resilience4j.circuitbreaker:
+  instances:
+    transactionService:
+      registerHealthIndicator: true
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 20
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        - org.springframework.web.client.ResourceAccessException
+
+resilience4j.bulkhead:
+  instances:
+    bulkheadTransactionService:
+      maxWaitDuration: 10ms
+      maxConcurrentCalls: 20
+
+resilience4j.retry:
+  instances:
+    retryCTransactionService:
+      maxRetryAttempts: 5 #Maximum no. of retries. Default 3
+      waitDuration: 10000 #Duration between retry attempt. Default 500 ms
+      retry-exceptions: #List or error classes to retry for. Default empty
+        - java.util.concurrent.TimeoutException
+
+resilience4j.ratelimiter:
+  instances:
+    transactionService:
+      timeoutDuration: 1000ms #How long a thread will wait for a permission. Default is 5s
+      limitRefreshPeriod: 5000 #How long is the period for limit refresh. Default is 500ns
+      limitForPeriod: 5 #This is the number of permissions available during a limit refresh period. Default is 50
+
+#resilience4j.timelimiter:
+#  instances:
+#    transactionService:
+#      timeoutDuration: 2s
+#      cancelRunningFuture: true
