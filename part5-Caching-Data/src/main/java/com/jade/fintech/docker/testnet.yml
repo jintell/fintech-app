@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  open-banking-db:
+    container_name: open-banking-db
+    image: 'mysql/mysql-server:latest'
+    ports:
+      - 3309:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=test@4$
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=acme
+    restart: always
+    volumes:
+      - "/Users/josleke/workspace/developer/data/my.cnf:/etc/my.cnf"
+    networks:
+      - webnet
+
+  testnet-service:
+    image: acme-banking
+    container_name: testnet-service
+    ports:
+      - "9200:8080"
+    restart: on-failure
+    depends_on:
+      - open-banking-db
+    environment:
+      MYSQL_HOST: open-banking-db
+      DATABASE_PORT: 3306
+      DATABASE_NAME: acme
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - webnet
+
+networks:
+  webnet:

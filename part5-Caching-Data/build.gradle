@@ -1,0 +1,135 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'org.openapi.generator' version '6.0.0'
+}
+
+group = 'com.jade'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+ext['resilience4jVersion'] = '1.7.1'
+
+configurations {
+    all*.exclude module : 'spring-boot-starter-logging'
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Data and JPA dependency
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.data:spring-data-commons'
+    // Spring Boot Web and Rest dependency
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation ('org.springframework.boot:spring-boot-starter-webflux')
+    // SDR - Spring Data Redis
+    implementation('org.springframework.data:spring-data-redis:2.7.2')
+    implementation('org.springframework.boot:spring-boot-starter-cache:2.7.2')
+    implementation('org.springframework.boot:spring-boot-starter-data-redis:2.7.2')
+    implementation('io.lettuce:lettuce-core:6.2.0.RELEASE')
+    // SpringDoc dependencies
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+    // Mysql Database dependency
+    runtimeOnly 'mysql:mysql-connector-java'
+    // @Nullable annotation
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.3'
+    // Bean Validation API support
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+//    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
+    // gson
+    implementation 'com.google.code.gson:gson:2.9.1'
+    //Open Api Generator
+    // https://mvnrepository.com/artifact/org.openapitools/openapi-generator
+    implementation 'org.openapitools:openapi-generator:6.0.0'
+    // Spring Fox Swagger
+    implementation 'io.springfox:springfox-swagger2:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
+    // Resilience4j dependencies
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "io.github.resilience4j:resilience4j-circuitbreaker:1.7.1"
+    implementation "io.github.resilience4j:resilience4j-spring-boot2:1.7.1"
+    implementation "io.github.resilience4j:resilience4j-reactor:1.7.1"
+    implementation "io.github.resilience4j:resilience4j-timelimiter:1.7.1"
+    // Spring security and keycloak
+//    implementation "org.springframework.boot:spring-boot-starter-security"
+//    implementation "org.keycloak:keycloak-spring-boot-starter:19.0.1"
+    // Project Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    // Spring test dependency
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Rest Assured dependency
+    testImplementation 'io.rest-assured:spring-mock-mvc:5.1.1'
+    // Testcontainers
+    // https://mvnrepository.com/artifact/org.testcontainers/testcontainers
+    testImplementation 'org.testcontainers:testcontainers:1.17.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.17.3'
+    testImplementation 'org.testcontainers:mysql:1.17.3'
+    // Spring Scheduling test
+    testImplementation 'org.awaitility:awaitility:3.1.2'
+    // Mock server dependency
+    testImplementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
+    // spring Security Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+}
+
+//dependencyManagement {
+//    imports {
+//        mavenBom "org.keycloak.bom:keycloak-adapter-bom:19.0.1"
+//    }
+//}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+openApiGenerate{
+    generatorName = "spring"
+    inputSpec = "$rootDir/open-api/account-info-openapi.yaml".toString()
+    outputDir = "$buildDir/open-api".toString()
+    apiPackage = "org.openapitools.example.api"
+    invokerPackage = "org.openapitools.example.invoker"
+    modelPackage = "com.jade.fintech.model"
+    configOptions = [
+            dateLibrary: "java11",
+            basePackage: "com.jade.fintech.model",
+            interfaceOnly: "true"
+    ]
+    globalProperties = [
+            modelDocs: "false",
+            generateApiDocumentation: "false"
+    ]
+}
+
+task copyFiles(type: Copy) {
+    from 'build/open-api/src/main/java/com/jade/fintech/model'
+    into 'src/main/java/com/jade/fintech/model'
+    include '*.java'
+}
+
+task codegen(dependsOn: clean){
+    doLast{
+        println("Finished generating Code...")
+    }
+}
+
+tasks.copyFiles.dependsOn 'openApiGenerate'
+tasks.clean.dependsOn 'copyFiles'
+
