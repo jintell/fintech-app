@@ -29,10 +29,8 @@ dependencies {
     // Spring Boot Web and Rest dependency
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation ('org.springframework.boot:spring-boot-starter-webflux')
-    // SDR - Spring Data Redis
+    // SDR - Spring Data Redis and Lettuce redis client
     implementation('org.springframework.data:spring-data-redis:2.7.2')
-    implementation('org.springframework.boot:spring-boot-starter-cache:2.7.2')
-    implementation('org.springframework.boot:spring-boot-starter-data-redis:2.7.2')
     implementation('io.lettuce:lettuce-core:6.2.0.RELEASE')
     // SpringDoc dependencies
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
